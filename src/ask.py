@@ -4,10 +4,12 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
+# Paths to the FAISS index and the pickled chunk texts
 INDEX_PATH = "data/faiss_index/index.faiss"
 DOCS_PATH = "data/faiss_index/docs.pkl"
 
-THRESHOLD = 0.55   # similarity threshold
+# Confidence gate threshold (0.55)
+THRESHOLD = 0.55   
 TOP_K = 5
 
 # Load OpenAI client
@@ -16,7 +18,7 @@ client = OpenAI()
 # Load embedding model
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Load FAISS index and documents
+# Load the prebuilt FAISS index and the original chunk texts
 index = faiss.read_index(INDEX_PATH)
 
 with open(DOCS_PATH, "rb") as f:
@@ -27,9 +29,10 @@ def search_docs(question):
     query_vector = model.encode(question).astype("float32")
     query_vector = np.array([query_vector])
 
-    # Search similar chunks
+   # Get the top-K nearest chunks. FAISS returns L2 distances.
     scores, indices = index.search(query_vector, TOP_K)
 
+    # keep only chunks above threshold
     results = []
     for score, idx in zip(scores[0], indices[0]):
         similarity = 1 / (1 + score)
@@ -40,6 +43,7 @@ def search_docs(question):
     return results
 
 def ask_llm(question, context):
+    # prompt: only answer from context
     prompt = f"""
 You are a policy assistant.
 
