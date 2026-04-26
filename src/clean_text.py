@@ -19,7 +19,6 @@ for file_name in os.listdir(INPUT_DIR):
     with open(input_path, "r", encoding="utf-8") as f:
         text = f.read()
 
-    # Basic cleaning:
     # remove extra spaces and new lines
     text = text.replace("\n", " ")
     text = " ".join(text.split())
