@@ -4,9 +4,10 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+# paths
 CHUNK_DIR = "data/chunks"
 INDEX_DIR = "data/faiss_index"
-
+# make sure output folder exists
 os.makedirs(INDEX_DIR, exist_ok=True)
 
 # Load embedding model
@@ -15,7 +16,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 texts = []
 embeddings = []
 
-# Read all chunk files
+# loop through all chunk files in the folder and embed each one
 for file_name in os.listdir(CHUNK_DIR):
     with open(os.path.join(CHUNK_DIR, file_name), "r", encoding="utf-8") as f:
         text = f.read()
